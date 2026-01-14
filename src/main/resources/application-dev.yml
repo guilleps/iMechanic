@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: imechanic
+
+# MYSQL DRIVE CONFIGURATION
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    url:
+    username:
+    password:
