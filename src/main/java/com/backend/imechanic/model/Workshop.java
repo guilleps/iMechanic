@@ -7,26 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "workshops")
 @Builder
-public class UserEntity {
+public class Workshop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String email;
-    private String password;
-
-    private boolean enabled;
+    private String name;
+    private String addres;
+//    private String RUC;
+    private String phone;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -35,15 +33,7 @@ public class UserEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Profile profile;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Workshop workshop;
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-        if (profile != null) profile.setUser(this);
-    }
-
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
