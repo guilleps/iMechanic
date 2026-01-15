@@ -1,7 +1,9 @@
 package com.backend.imechanic.controller;
 
 import com.backend.imechanic.controller.request.CustomerRequest;
+import com.backend.imechanic.controller.request.WorkshopRequest;
 import com.backend.imechanic.controller.response.CustomerResponse;
+import com.backend.imechanic.controller.response.WorkshopResponse;
 import com.backend.imechanic.service.UserService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
@@ -22,9 +24,9 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(customerResponse);
     }
 
-
     @PostMapping("/signup/workshop")
-    public String signupWorkshop() {
-        return "ha creado un workshop";
+    public ResponseEntity<@NonNull WorkshopResponse> signupWorkshop(@Valid @RequestBody WorkshopRequest request) {
+        WorkshopResponse workshopResponse = userService.saveWorkshop(request);
+        return ResponseEntity.status(HttpStatus.OK).body(workshopResponse);
     }
 }
