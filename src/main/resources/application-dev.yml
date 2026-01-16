@@ -2,7 +2,7 @@ spring:
   application:
     name: imechanic
 
-# MYSQL DRIVE CONFIGURATION
+  # MYSQL DRIVE CONFIGURATION
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -10,3 +10,16 @@ spring:
     url:
     username:
     password:
+
+
+logging:
+  level:
+    web: warn
+
+
+# SECURITY CONFIGURATION
+auth:
+  secret:
+    # https://randomkeygen.com/hmac-key
+    key:
+  issuer:
