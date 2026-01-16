@@ -4,19 +4,29 @@ import com.backend.imechanic.controller.request.CustomerRequest;
 import com.backend.imechanic.controller.request.WorkshopRequest;
 import com.backend.imechanic.controller.response.CustomerResponse;
 import com.backend.imechanic.controller.response.WorkshopResponse;
+import com.backend.imechanic.enums.Role;
 import com.backend.imechanic.model.Profile;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.model.Workshop;
 import com.backend.imechanic.repository.UserRepository;
-import com.backend.imechanic.repository.WorkshopRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final WorkshopRepository workshopRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+    }
 
     public CustomerResponse saveUser(CustomerRequest request) {
 
@@ -28,12 +38,16 @@ public class UserService {
 
         UserEntity newUser = UserEntity.builder()
                 .email(request.email())
-                .password(request.password())
-                .enabled(true)
-                .profile(newProfile)
+                .password(passwordEncoder.encode(request.password()))
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         newProfile.setUser(newUser);
+        newUser.setProfile(newProfile);
         userRepository.save(newUser);
 
         return new CustomerResponse(newUser.getEmail(), newProfile.getFirstName(), newProfile.getLastName(), newProfile.getPhone());
@@ -55,15 +69,20 @@ public class UserService {
 
         UserEntity newUser = UserEntity.builder()
                 .email(request.email())
-                .password(request.password())
-                .enabled(true)
+                .password(passwordEncoder.encode(request.password()))
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
                 .profile(newProfile)
                 .workshop(newWorkshop)
+                .role(Role.ROLE_WORKSHOP_ADMIN)
                 .build();
 
         newProfile.setUser(newUser);
         newWorkshop.setUser(newUser);
 
+        newUser.setProfile(newProfile);
         userRepository.save(newUser);
 
         return new WorkshopResponse("Workshop and Admin account created successfully.", newWorkshop.getId(), newUser.getId());
