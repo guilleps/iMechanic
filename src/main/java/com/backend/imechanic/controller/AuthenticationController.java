@@ -23,7 +23,7 @@ public class AuthenticationController {
     @PostMapping("/signup/customer")
     public ResponseEntity<@NonNull CustomerResponse> signupCustomer(@Valid @RequestBody CustomerRequest request) {
         CustomerResponse customerResponse = userService.saveUser(request);
-        return ResponseEntity.status(HttpStatus.OK).body(customerResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerResponse);
     }
 
     @PostMapping("/signup/workshop")
@@ -40,12 +40,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            LoginResponse response = userService.login(request);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
