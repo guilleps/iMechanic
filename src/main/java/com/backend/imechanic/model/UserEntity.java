@@ -32,16 +32,16 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @Column(name = "is_account_non_expired")
-    private boolean isAccountNonExpired;
+    private boolean isAccountNonExpired; // uso en cuentas temporales, membresías, alumnos por semestre
 
     @Column(name = "is_account_non_locked")
-    private boolean isAccountNonLocked;
+    private boolean isAccountNonLocked; // muchos intentos fallidos, fraude, admin bloquea
 
     @Column(name = "is_credentials_non_expired")
-    private boolean isCredentialsNonExpired;
+    private boolean isCredentialsNonExpired; // credenciales expiradas, en caso se desee cambiar la contraseña cada X días
 
     @Column(name = "is_enabled")
-    private boolean isEnabled;
+    private boolean isEnabled; // verificación de cuenta por email, usuario desactivado, ban
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -89,5 +89,10 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return isCredentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
     }
 }

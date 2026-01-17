@@ -11,6 +11,11 @@ spring:
     username:
     password:
 
+  # JAVAEMAIL CONFIGURATION
+  mail:
+    password:
+    username:
+
 
 logging:
   level:
@@ -22,4 +27,3 @@ auth:
   secret:
     # https://randomkeygen.com/hmac-key
     key:
-  issuer:
