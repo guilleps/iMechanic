@@ -1,5 +1,6 @@
 package com.backend.imechanic.service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.backend.imechanic.config.auth.JWT.JwtService;
 import com.backend.imechanic.config.email.EmailService;
 import com.backend.imechanic.controller.request.CustomerRequest;
@@ -9,11 +10,15 @@ import com.backend.imechanic.controller.response.CustomerResponse;
 import com.backend.imechanic.controller.response.LoginResponse;
 import com.backend.imechanic.controller.response.WorkshopResponse;
 import com.backend.imechanic.enums.Role;
+import com.backend.imechanic.exception.EmailAlreadyRegisteredException;
+import com.backend.imechanic.exception.InvalidVerificationTokenException;
+import com.backend.imechanic.exception.UserNotFoundException;
 import com.backend.imechanic.model.Profile;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.model.Workshop;
 import com.backend.imechanic.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -32,6 +38,12 @@ public class UserService {
     private final EmailService emailService;
 
     public CustomerResponse saveUser(CustomerRequest request) {
+        String email = request.email().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(request.email())) {
+            log.info("Signup rejected: email already registered (email={})", email);
+            throw new EmailAlreadyRegisteredException(email);
+        }
 
         Profile newProfile = Profile.builder()
                 .firstName(request.firstName())
@@ -40,7 +52,7 @@ public class UserService {
                 .build();
 
         UserEntity newUser = UserEntity.builder()
-                .email(request.email())
+                .email(email)
                 .password(passwordEncoder.encode(request.password()))
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
@@ -60,6 +72,11 @@ public class UserService {
     }
 
     public WorkshopResponse saveWorkshop(WorkshopRequest request) {
+        String email = request.email().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyRegisteredException(email);
+        }
 
         Profile newProfile = Profile.builder()
                 .firstName(request.ownerName())
@@ -74,7 +91,7 @@ public class UserService {
                 .build();
 
         UserEntity newUser = UserEntity.builder()
-                .email(request.email())
+                .email(email)
                 .password(passwordEncoder.encode(request.password()))
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
@@ -100,15 +117,20 @@ public class UserService {
     @Transactional
     public String verifyAccount(String token) {
 
-        String email = jwtService.extractSubject(token);
+        DecodedJWT jwt = jwtService.verifyAndAssertType(token, "verify");
+
+        String email = jwt.getSubject();
+        if (email == null || email.isBlank()) {
+            throw new InvalidVerificationTokenException("Token sin subject");
+        }
 
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
-        if (user.isEnabled()) return "Usuario ya verificado";
+        if (user.isEnabled()) return "User already verified";
 
         user.setEnabled(true);
-        return "Usuario verificado";
+        return "Verified user";
     }
 
     public LoginResponse login(LoginRequest request) {

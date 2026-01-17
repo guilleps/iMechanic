@@ -4,7 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.backend.imechanic.controller.response.LoginResponse;
+import com.backend.imechanic.enums.Role;
+import com.backend.imechanic.exception.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,15 @@ public class JwtService {
                 .verify(token);
     }
 
+    public DecodedJWT verifyAndAssertType(String token, String expectedType) {
+        DecodedJWT jwt = verify(token);
+        String type = jwt.getClaim("type").asString();
+        if (!expectedType.equals(type)) {
+            throw new IllegalArgumentException("Invalid Token type");
+        }
+        return jwt;
+    }
+
     public String extractSubject(String token) {
         return verify(token).getSubject();
     }
@@ -43,13 +55,14 @@ public class JwtService {
 
     public LoginResponse generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
-        Instant expiresAt = now.plusSeconds(60 * 15);
+        Instant expiresAt = now.plusSeconds(60 * 30);
         String role = userDetails.getAuthorities().toString();
 
         String token = JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(userDetails.getUsername())
                 .withClaim("role", role)
+                .withClaim("type", "access")
                 .withJWTId(UUID.randomUUID().toString())
                 .withIssuedAt(Date.from(now))
                 .withNotBefore(Date.from(now))
@@ -66,6 +79,7 @@ public class JwtService {
         return JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(email)
+                .withClaim("type", "verify")
                 .withJWTId(UUID.randomUUID().toString())
                 .withIssuedAt(Date.from(now))
                 .withNotBefore(Date.from(now))
