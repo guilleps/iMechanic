@@ -1,8 +1,10 @@
 package com.backend.imechanic.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+@JsonIgnoreProperties
 public record EmployeeRequest(
         @Email(message = "The email does not have a valid format.")
         @NotBlank(message = "The field 'email' is required")

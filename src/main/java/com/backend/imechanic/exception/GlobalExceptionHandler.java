@@ -1,7 +1,9 @@
 package com.backend.imechanic.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -16,7 +18,7 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BodyError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         List<BodyError.FieldError> fields = ex.getBindingResult()
@@ -38,7 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyRegisteredException.class)
-    public ResponseEntity<BodyError> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
 
         BodyError bodyError = new BodyError(
@@ -54,7 +56,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JWTVerificationException.class)
-    public ResponseEntity<BodyError> handleJwtVerification(JWTVerificationException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleJwtVerification(JWTVerificationException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         BodyError bodyError = new BodyError(
@@ -70,7 +72,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<BodyError> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         BodyError bodyError = new BodyError(
@@ -86,7 +88,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<BodyError> handleBadRequest(UserNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleBadRequest(UserNotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
         BodyError bodyError = new BodyError(
@@ -102,7 +104,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidVerificationTokenException.class)
-    public ResponseEntity<BodyError> handleBadRequest(InvalidVerificationTokenException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleBadRequest(InvalidVerificationTokenException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         BodyError bodyError = new BodyError(
@@ -118,7 +120,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<BodyError> badCredentials(BadCredentialsException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> badCredentials(BadCredentialsException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         BodyError bodyError = new BodyError(
@@ -134,7 +136,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<BodyError> disabled(DisabledException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> disabled(DisabledException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -150,7 +152,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<BodyError> locked(LockedException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> locked(LockedException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -169,7 +171,7 @@ public class GlobalExceptionHandler {
             CredentialsExpiredException.class,
             AccountExpiredException.class
     })
-    public ResponseEntity<BodyError> expired(HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> expired(HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -185,7 +187,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<BodyError> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
         BodyError bodyError = new BodyError(
@@ -201,7 +203,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<BodyError> forbidden(AccessDeniedException ex, HttpServletRequest req) {
+    public ResponseEntity<@NonNull BodyError> forbidden(AccessDeniedException ex, HttpServletRequest req) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -217,7 +219,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<BodyError> conflict(DataIntegrityViolationException ex, HttpServletRequest req) {
+    public ResponseEntity<@NonNull BodyError> conflict(DataIntegrityViolationException ex, HttpServletRequest req) {
         HttpStatus status = HttpStatus.CONFLICT;
 
         BodyError bodyError = new BodyError(
@@ -230,5 +232,24 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(status).body(bodyError);
+    }
+
+    @ExceptionHandler(UnrecognizedPropertyException.class)
+    public ResponseEntity<@NonNull BodyError> handleUnknownField(
+            UnrecognizedPropertyException ex,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        BodyError body = new BodyError(
+                "UNKNOWN_FIELD",
+                "Field not allowed: " + ex.getPropertyName(),
+                status.value(),
+                request.getRequestURI(),
+                OffsetDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(body);
     }
 }
