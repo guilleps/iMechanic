@@ -8,13 +8,13 @@ spring:
       ddl-auto: create-drop
   datasource:
     url: jdbc:mysql://localhost:3306/imechanic_db
-    username: root
-    password: Root123!
+    username:
+    password:
 
   # JAVAEMAIL CONFIGURATION
   mail:
-    password: xewfkjyyqxpmxbye
-    username: foodhub.recetas@gmail.com
+    password:
+    username:
 
 
 logging:
@@ -26,4 +26,4 @@ logging:
 auth:
   secret:
     # https://randomkeygen.com/hmac-key
-    key: af537064ba10d42c746a0d71a2ca86172a30f96ca50e94f666f2bc5d4cf2b840
+    key:

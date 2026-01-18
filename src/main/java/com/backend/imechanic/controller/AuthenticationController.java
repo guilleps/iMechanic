@@ -33,13 +33,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String token) {
+    public ResponseEntity<@NonNull String> verifyAccount(@RequestParam String token) {
         String response = userService.verifyAccount(token);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<@NonNull LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = userService.login(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
