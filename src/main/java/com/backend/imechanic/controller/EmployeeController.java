@@ -31,7 +31,7 @@ public class EmployeeController {
 
     @GetMapping("/{employeeId}")
     public ResponseEntity<@NonNull EmployeeResponse> getOne(@PathVariable Long employeeId,
-                                                   Authentication auth) {
+                                                            Authentication auth) {
         UserEntity admin = (UserEntity) auth.getPrincipal();
         return ResponseEntity.ok(employeeService.getEmployee(employeeId, admin));
     }

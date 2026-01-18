@@ -135,13 +135,12 @@ public class EmployeeService {
 
         Employee employeeFound = verifyOwnerShip(employeeId, admin);
 
-        boolean enable = employeeFound.getUser().isEnabled();
+        boolean enable = !employeeFound.getUser().isEnabled();
+        employeeFound.getUser().setEnabled(enable);
 
-        employeeFound.getUser().setEnabled(!enable);
-
-        employeeRepository.save(employeeFound);
-
-        return enable ? "Employee with ID: " + employeeFound.getId() + " available" : "Employee with ID: " + employeeFound.getId() + " not available";
+        return enable
+                ? "Employee with ID: " + employeeFound.getId() + " available"
+                : "Employee with ID: " + employeeFound.getId() + " not available";
     }
 
     @Transactional

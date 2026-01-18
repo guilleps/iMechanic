@@ -86,7 +86,7 @@ public class UserService {
 
         Workshop newWorkshop = Workshop.builder()
                 .name(request.workshopName())
-                .addres(request.address())
+                .address(request.address())
                 .phone(request.phone())
                 .build();
 
