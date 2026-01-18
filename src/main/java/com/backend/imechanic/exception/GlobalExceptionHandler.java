@@ -16,10 +16,7 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BodyError> handleValidation(
-            MethodArgumentNotValidException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         List<BodyError.FieldError> fields = ex.getBindingResult()
@@ -41,10 +38,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyRegisteredException.class)
-    public ResponseEntity<BodyError> handleEmailAlreadyRegisteredException(
-            EmailAlreadyRegisteredException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
 
         BodyError bodyError = new BodyError(
@@ -60,10 +54,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JWTVerificationException.class)
-    public ResponseEntity<BodyError> handleJwtVerification(
-            JWTVerificationException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleJwtVerification(JWTVerificationException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         BodyError bodyError = new BodyError(
@@ -79,10 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<BodyError> handleBadRequest(
-            IllegalArgumentException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         BodyError bodyError = new BodyError(
@@ -98,10 +86,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<BodyError> handleBadRequest(
-            UserNotFoundException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleBadRequest(UserNotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
         BodyError bodyError = new BodyError(
@@ -117,10 +102,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidVerificationTokenException.class)
-    public ResponseEntity<BodyError> handleBadRequest(
-            InvalidVerificationTokenException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> handleBadRequest(InvalidVerificationTokenException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         BodyError bodyError = new BodyError(
@@ -136,10 +118,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<BodyError> badCredentials(
-            BadCredentialsException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> badCredentials(BadCredentialsException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         BodyError bodyError = new BodyError(
@@ -155,10 +134,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<BodyError> disabled(
-            DisabledException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> disabled(DisabledException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -174,10 +150,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<BodyError> locked(
-            LockedException ex,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> locked(LockedException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -196,9 +169,7 @@ public class GlobalExceptionHandler {
             CredentialsExpiredException.class,
             AccountExpiredException.class
     })
-    public ResponseEntity<BodyError> expired(
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<BodyError> expired(HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -206,6 +177,54 @@ public class GlobalExceptionHandler {
                 "Your account or credentials have expired",
                 status.value(),
                 request.getRequestURI(),
+                OffsetDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(bodyError);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<BodyError> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        BodyError bodyError = new BodyError(
+                "NOT_FOUND",
+                ex.getMessage(),
+                status.value(),
+                request.getRequestURI(),
+                OffsetDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(bodyError);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<BodyError> forbidden(AccessDeniedException ex, HttpServletRequest req) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        BodyError bodyError = new BodyError(
+                "FORBIDDEN",
+                ex.getMessage(),
+                status.value(),
+                req.getRequestURI(),
+                OffsetDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(bodyError);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<BodyError> conflict(DataIntegrityViolationException ex, HttpServletRequest req) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        BodyError bodyError = new BodyError(
+                "CONFLICT",
+                ex.getMessage(),
+                status.value(),
+                req.getRequestURI(),
                 OffsetDateTime.now(),
                 null
         );

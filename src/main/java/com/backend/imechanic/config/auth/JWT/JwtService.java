@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.backend.imechanic.controller.response.LoginResponse;
-import com.backend.imechanic.enums.Role;
 import com.backend.imechanic.exception.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;

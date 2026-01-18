@@ -1,29 +1,32 @@
 package com.backend.imechanic.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "workshops")
+@Table(name = "employees")
 @Builder
-public class Workshop {
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String addres;
-//    private String RUC;
-    private String phone;
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private UserEntity user;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name="workshop_id", nullable = false)
+    private Workshop workshop;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -31,11 +34,4 @@ public class Workshop {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private UserEntity user;
-
-    @OneToMany(mappedBy = "workshop")
-    private List<Employee> employees;
 }
