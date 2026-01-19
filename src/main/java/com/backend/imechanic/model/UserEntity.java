@@ -1,6 +1,7 @@
 package com.backend.imechanic.model;
 
 import com.backend.imechanic.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,6 +63,10 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; // asignacion del nuevo campo role, RBAC
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Vehicle> vehicles;
 
     public void setProfile(Profile profile) {
         this.profile = profile;

@@ -3,6 +3,7 @@ package com.backend.imechanic.controller.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @JsonIgnoreProperties
 public record CustomerRequest(
@@ -11,7 +12,7 @@ public record CustomerRequest(
         String email,
 
         @NotBlank(message = "The field 'password' is required")
-//        @Pattern(regexp = "")
+//        @Pattern(regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=.*[a-z0-9])[A-Za-z0-9!@#$%^&*(),.?\":{}|<>]{8,}$")
         String password,
 
         @NotBlank(message = "The field 'firstName' is required")
