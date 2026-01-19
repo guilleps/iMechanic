@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -50,4 +52,7 @@ public class Catalog {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
+
+    @OneToMany(mappedBy = "service")
+    private Set<EmployeeCatalogAssignment> employeeAssignments = new HashSet<>();
 }

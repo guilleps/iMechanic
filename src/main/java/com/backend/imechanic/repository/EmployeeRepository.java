@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<@NonNull Employee, @NonNull Long> {
 
@@ -14,4 +15,6 @@ public interface EmployeeRepository extends JpaRepository<@NonNull Employee, @No
             "join fetch e.user u join fetch u.profile p " +
             "where e.workshop.id = :workshopId")
     List<Employee> findAllByWorkshopIdWithUserAndProfile(@Param("workshopId") Long workshopId);
+
+    Optional<Employee> findByIdAndWorkshop_User_Id(Long employeeId, Long workshopId);
 }
