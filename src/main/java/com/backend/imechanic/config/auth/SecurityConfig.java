@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/employees/**").authenticated()
                         .requestMatchers("/api/v1/services/**").authenticated()
+                        .requestMatchers("/api/v1/vehicles/**").authenticated()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -12,7 +12,7 @@ public record WorkshopRequest(
         String email,
 
         @NotBlank(message = "The field 'password' is required")
-        @Pattern(regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=.*[a-z0-9])[A-Za-z0-9!@#$%^&*(),.?\":{}|<>]{8,}$")
+//        @Pattern(regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=.*[a-z0-9])[A-Za-z0-9!@#$%^&*(),.?\":{}|<>]{8,}$")
         String password,
 
         @NotBlank(message = "The field 'ownerName' is required")
