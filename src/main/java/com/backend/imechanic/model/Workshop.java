@@ -23,7 +23,7 @@ public class Workshop {
 
     private String name;
     private String address;
-//    private String RUC;
+    //    private String RUC;
     private String phone;
 
     @Column(name = "created_at")
