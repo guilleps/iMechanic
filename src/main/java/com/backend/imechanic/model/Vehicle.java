@@ -37,7 +37,7 @@ public class Vehicle {
     private boolean active;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name="customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private UserEntity customer;
 
     @OneToMany(mappedBy = "vehicle")

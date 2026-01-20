@@ -28,7 +28,7 @@ public class Employee {
     private UserEntity user;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name="workshop_id", nullable = false)
+    @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
 
     @Column(name = "created_at")

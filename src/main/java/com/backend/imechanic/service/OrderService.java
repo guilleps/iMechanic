@@ -1,13 +1,13 @@
 package com.backend.imechanic.service;
 
+import com.backend.imechanic.controller.request.OrderRequest;
 import com.backend.imechanic.controller.response.OrderResponse;
 import com.backend.imechanic.controller.response.ServiceResponse;
 import com.backend.imechanic.exception.EntityNotFoundException;
+import com.backend.imechanic.exception.IllegalArgumentException;
 import com.backend.imechanic.model.*;
-import com.backend.imechanic.repository.CatalogRepository;
-import com.backend.imechanic.repository.OrderRepository;
-import com.backend.imechanic.repository.VehicleRepository;
-import com.backend.imechanic.repository.WorkshopRepository;
+import com.backend.imechanic.repository.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,33 +27,36 @@ public class OrderService {
     private final VehicleRepository vehicleRepository;
     private final CatalogRepository catalogRepository;
     private final WorkshopRepository workshopRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeCatalogAssignmentRepository assignmentRepository;
 
     @Transactional
-    public OrderResponse create(String plate, List<Long> serviceIds, UserEntity creator) {
-        Workshop workshop = workshopRepository.findByUserId(creator.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+    public OrderResponse create(OrderRequest request, UserEntity creator) {
 
-        Vehicle vehicle = vehicleRepository.findVehicleByPlate(plate)
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
+        validateRequest(request);
 
-        List<Catalog> services = catalogRepository.findByIdInAndWorkshop_IdAndActiveTrue(serviceIds, workshop.getId());
+        Workshop workshop = findWorkshopOfCreator(creator);
+        Vehicle vehicle = findVehicle(request.plate());
 
-        if (services.size() != serviceIds.size()) {
-            throw new EntityNotFoundException("One or more services were not found");
-        }
+        List<Long> serviceIds = request.items().stream()
+                .map(OrderRequest.OrderItemRequest::serviceId)
+                .toList();
+        List<Long> employeeIds = request.items().stream()
+                .map(OrderRequest.OrderItemRequest::employeeId)
+                .toList();
+
+        List<Catalog> services = findServicesForWorkshop(serviceIds, workshop.getId());
+        List<Employee> employees = findEmployeesForWorkshop(employeeIds, workshop.getId());
+
+        // TODO: evaluar disponibilidad del employee x item
+        validateAssignments(employeeIds, serviceIds, request.items());
 
         Order order = Order.builder()
                 .vehicle(vehicle)
                 .workshop(workshop)
                 .build();
 
-        List<Item> items = services.stream()
-                .map(s -> Item.builder()
-                        .order(order)
-                        .service(s)
-                        .price(s.getBasePrice())
-                        .build()
-                ).toList();
+        List<Item> items = buildItems(order, request.items(), services, employees);
 
         order.setItems(items);
 
@@ -62,15 +68,13 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        UserEntity customer = vehicle.getCustomer();
-
         return new OrderResponse(
                 new OrderResponse.VehicleResponse(
                         vehicle.getId(),
                         vehicle.getPlate(),
                         new OrderResponse.CustomerResponse(
-                                customer.getId(),
-                                customer.getEmail()
+                                vehicle.getCustomer().getId(),
+                                vehicle.getCustomer().getEmail()
                         )
                 ),
                 items.stream().map(
@@ -85,8 +89,86 @@ public class OrderService {
                                 ),
                                 item.getPrice()
                         )
-                ).toList()
-                , totalCost.toString());
+                ).toList(),
+                totalCost.toString());
+    }
+
+    private List<Item> buildItems(
+            Order order,
+            List<OrderRequest.OrderItemRequest> items,
+            List<Catalog> services,
+            List<Employee> employees
+    ) {
+        Map<Long, Catalog> serviceById = services.stream()
+                .collect(Collectors.toMap(Catalog::getId, s -> s));
+
+        Map<Long, Employee> employeeById = employees.stream()
+                .collect(Collectors.toMap(Employee::getId, e -> e));
+
+        return items.stream()
+                .map(s -> {
+                            Catalog service = serviceById.get(s.serviceId());
+                            Employee employee = employeeById.get(s.employeeId());
+
+                            return Item.builder()
+                                    .order(order)
+                                    .service(service)
+                                    .employee(employee)
+                                    .price(service.getBasePrice())
+                                    .build();
+                        }
+                ).toList();
+    }
+
+    private void validateAssignments(
+            List<Long> employeeIds,
+            List<Long> serviceIds,
+            List<OrderRequest.OrderItemRequest> request
+    ) {
+        List<EmployeeCatalogAssignment> assignments = assignmentRepository
+                .findAllByEmployee_IdInAndService_IdIn(employeeIds, serviceIds);
+
+        Set<String> pairs = assignments.stream()
+                .map(a -> a.getEmployee().getId() + ":" + a.getService().getId())
+                .collect(Collectors.toSet());
+
+        for (OrderRequest.OrderItemRequest pair : request) {
+            String key = pair.employeeId() + ":" + pair.serviceId();
+            if (!pairs.contains(key))
+                throw new IllegalArgumentException("Employee " + pair.employeeId() + " is not assigned to service " + pair.serviceId());
+        }
+
+    }
+
+    private List<Employee> findEmployeesForWorkshop(List<Long> employeeIds, Long id) {
+        return employeeRepository
+                .findAllByIdInAndWorkshop_Id(employeeIds, id)
+                .orElseThrow(() -> new EntityNotFoundException("One or more employees were not found for this workshop"));
+    }
+
+    private List<Catalog> findServicesForWorkshop(List<Long> serviceIds, Long id) {
+        return catalogRepository
+                .findAllByIdInAndWorkshop_IdAndActiveTrue(serviceIds, id)
+                .orElseThrow(() -> new EntityNotFoundException("One or more services were not found for this workshop"));
+    }
+
+    private Vehicle findVehicle(@NotBlank(message = "The field 'plate' is required") String plate) {
+        return vehicleRepository.findVehicleByPlate(plate)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
+    }
+
+    private Workshop findWorkshopOfCreator(UserEntity creator) {
+        return workshopRepository.findByUserId(creator.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+    }
+
+    private void validateRequest(OrderRequest request) {
+        if (request == null || request.items() == null || request.items().isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one item");
+        }
+        if (request.plate() == null || request.plate().isBlank()) {
+            throw new IllegalArgumentException("Plate is required");
+        }
     }
 
 }

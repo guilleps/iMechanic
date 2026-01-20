@@ -14,4 +14,6 @@ public interface EmployeeCatalogAssignmentRepository extends JpaRepository<@NonN
     Optional<EmployeeCatalogAssignment> findByEmployee_IdAndService_Id(Long employeeId, Long serviceId);
 
     List<EmployeeCatalogAssignment> findAllByEmployee_IdAndEmployee_Workshop_User_Id(Long employeeId, Long adminUserId);
+
+    List<EmployeeCatalogAssignment> findAllByEmployee_IdInAndService_IdIn(List<Long> serviceId, List<Long> employeeId);
 }

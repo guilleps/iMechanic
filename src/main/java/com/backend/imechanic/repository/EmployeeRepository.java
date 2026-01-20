@@ -17,4 +17,6 @@ public interface EmployeeRepository extends JpaRepository<@NonNull Employee, @No
     List<Employee> findAllByWorkshopIdWithUserAndProfile(@Param("workshopId") Long workshopId);
 
     Optional<Employee> findByIdAndWorkshop_User_Id(Long employeeId, Long workshopId);
+
+    Optional<List<Employee>> findAllByIdInAndWorkshop_Id(List<Long> employeeIds, Long workshopId);
 }

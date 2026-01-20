@@ -10,7 +10,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "items")
+@Table(
+        name = "items",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"order_id", "service_id"}
+        )
+)
 @Builder
 public class Item {
 
@@ -25,6 +30,10 @@ public class Item {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
     private Catalog service;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;

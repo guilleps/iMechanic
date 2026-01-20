@@ -22,12 +22,17 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // añadir descripcion del problema
+//    private String description;
+
+    // TODO: considerar un mecanico lider?
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name="vehicle_id", nullable = false)
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name="workshop_id", nullable = false)
+    @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
