@@ -1,13 +1,31 @@
 package com.backend.imechanic.controller.response;
 
-import com.backend.imechanic.model.Item;
-import com.backend.imechanic.model.Vehicle;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 public record OrderResponse(
-        Vehicle vehicle,
-        List<Item> items,
+        VehicleResponse vehicle,
+        List<ItemResponse> items,
         String totalCost
 ) {
+    public record VehicleResponse(
+            Long id,
+            String plate,
+            CustomerResponse customer
+    ) {
+    }
+
+    public record CustomerResponse(
+            Long id,
+            String email
+    ) {
+    }
+
+    public record ItemResponse(
+            Long id,
+            ServiceResponse service,
+            BigDecimal price
+    ) {
+    }
+
 }

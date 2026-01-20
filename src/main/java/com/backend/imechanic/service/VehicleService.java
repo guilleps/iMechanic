@@ -89,17 +89,14 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
-    public VehicleResponse getVehicleByPlate(String plate, UserEntity customer) {
-
-        UserEntity user = userRepository.findById(customer.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Workshop not found for admin"));
+    public VehicleResponse getVehicleByPlate(String plate) {
 
         Vehicle vehicle = vehicleRepository
-                .findVehicleByPlateAndCustomer_Id(plate, user.getId())
+                .findVehicleByPlate(plate)
                 .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
 
         return new VehicleResponse(
-                user.getId().toString(),
+                vehicle.getCustomer().getId().toString(),
                 vehicle.getPlate(),
                 vehicle.getModel(),
                 vehicle.getBrand(),

@@ -3,6 +3,7 @@ package com.backend.imechanic.controller;
 import com.backend.imechanic.controller.response.OrderResponse;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.service.OrderService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{plate}")
-    public ResponseEntity<OrderResponse> create(
+    public ResponseEntity<@NonNull OrderResponse> create(
             @PathVariable String plate,
             @RequestBody List<Long> serviceIds,
             Authentication auth

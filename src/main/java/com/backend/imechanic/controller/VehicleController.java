@@ -54,13 +54,9 @@ public class VehicleController {
 
     @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
     @GetMapping("/search/{plate}")
-    public ResponseEntity<@NonNull VehicleResponse> getByVehiclePlate(
-            @PathVariable String plate,
-            Authentication auth
-    ) {
-        UserEntity customer = (UserEntity) auth.getPrincipal();
+    public ResponseEntity<@NonNull VehicleResponse> getByVehiclePlate(@PathVariable String plate) {
 
-        return ResponseEntity.ok(vehicleService.getVehicleByPlate(plate, customer));
+        return ResponseEntity.ok(vehicleService.getVehicleByPlate(plate));
     }
 
     @PatchMapping("/{vehicleId}")

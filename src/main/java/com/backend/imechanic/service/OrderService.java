@@ -1,6 +1,7 @@
 package com.backend.imechanic.service;
 
 import com.backend.imechanic.controller.response.OrderResponse;
+import com.backend.imechanic.controller.response.ServiceResponse;
 import com.backend.imechanic.exception.EntityNotFoundException;
 import com.backend.imechanic.model.*;
 import com.backend.imechanic.repository.CatalogRepository;
@@ -32,7 +33,7 @@ public class OrderService {
         Vehicle vehicle = vehicleRepository.findVehicleByPlate(plate)
                 .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
 
-        List<Catalog> services = catalogRepository.findByIdAndWorkshop_IdAndActiveTrue(serviceIds, workshop.getId());
+        List<Catalog> services = catalogRepository.findByIdInAndWorkshop_IdAndActiveTrue(serviceIds, workshop.getId());
 
         if (services.size() != serviceIds.size()) {
             throw new EntityNotFoundException("One or more services were not found");
@@ -61,7 +62,31 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        return new OrderResponse(vehicle, items, totalCost.toString());
+        UserEntity customer = vehicle.getCustomer();
+
+        return new OrderResponse(
+                new OrderResponse.VehicleResponse(
+                        vehicle.getId(),
+                        vehicle.getPlate(),
+                        new OrderResponse.CustomerResponse(
+                                customer.getId(),
+                                customer.getEmail()
+                        )
+                ),
+                items.stream().map(
+                        item -> new OrderResponse.ItemResponse(
+                                item.getId(),
+                                new ServiceResponse(
+                                        item.getService().getName(),
+                                        item.getService().getDescription(),
+                                        item.getService().getCategory().toString(),
+                                        item.getService().getBasePrice(),
+                                        item.getService().isActive()
+                                ),
+                                item.getPrice()
+                        )
+                ).toList()
+                , totalCost.toString());
     }
 
 }
