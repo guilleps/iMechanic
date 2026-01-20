@@ -11,4 +11,6 @@ public interface CatalogRepository extends JpaRepository<Catalog, Long> {
     List<Catalog> findAllByWorkshop_User_IdOrderByCreatedAtDesc(Long userId);
 
     Optional<Catalog> findByIdAndWorkshop_User_Id(Long serviceId, Long userId);
+
+    List<Catalog> findByIdAndWorkshop_IdAndActiveTrue(List<Long> serviceIdS, Long workshopId);
 }

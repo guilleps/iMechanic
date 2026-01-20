@@ -28,6 +28,7 @@ public class EmployeeCatalogAssignment {
     @JoinColumn(name = "service_id", nullable = false)
     private Catalog service;
 
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
