@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,35 +14,27 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "vehicles")
+@Table(name = "orders")
 @Builder
-public class Vehicle {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String plate;
-
-    @Column(nullable = false)
-    private String model;
-
-    @Column(nullable = false)
-    private String brand;
-
-    @Column(nullable = false)
-    private String year;
-
-    @Column(nullable = false)
-    private boolean active;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name="vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name="customer_id", nullable = false)
-    private UserEntity customer;
+    @JoinColumn(name="workshop_id", nullable = false)
+    private Workshop workshop;
 
-    @OneToMany(mappedBy = "vehicle")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Item> items;
+
+    @Column(name = "total_cost", precision = 10, scale = 2)
+    private BigDecimal totalCost;
 
     @Column(name = "created_at")
     @CreationTimestamp

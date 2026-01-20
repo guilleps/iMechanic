@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -55,4 +56,7 @@ public class Catalog {
 
     @OneToMany(mappedBy = "service")
     private Set<EmployeeCatalogAssignment> employeeAssignments = new HashSet<>();
+
+    @OneToMany(mappedBy = "service")
+    private List<Item> items;
 }
