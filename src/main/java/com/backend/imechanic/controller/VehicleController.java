@@ -17,12 +17,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vehicles")
-@PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
 @RequiredArgsConstructor
 public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull VehicleResponse> create(
             @Valid @RequestBody VehicleRequest request,
             Authentication auth
@@ -35,6 +35,7 @@ public class VehicleController {
     }
 
     @GetMapping("/{vehicleId}")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull VehicleResponse> getOne(
             @PathVariable Long vehicleId,
             Authentication auth
@@ -45,12 +46,25 @@ public class VehicleController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull List<VehicleResponse>> getAll(Authentication auth) {
         UserEntity customer = (UserEntity) auth.getPrincipal();
         return ResponseEntity.ok(vehicleService.getAllVehiclesByCustomer(customer));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
+    @GetMapping("/search/{plate}")
+    public ResponseEntity<@NonNull VehicleResponse> getByVehiclePlate(
+            @PathVariable String plate,
+            Authentication auth
+    ) {
+        UserEntity customer = (UserEntity) auth.getPrincipal();
+
+        return ResponseEntity.ok(vehicleService.getVehicleByPlate(plate, customer));
+    }
+
     @PatchMapping("/{vehicleId}")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull VehicleResponse> update(
             @PathVariable Long vehicleId,
             @Valid @RequestBody VehicleRequest request,
@@ -64,6 +78,7 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{vehicleId}")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull Void> delete(@PathVariable Long vehicleId, Authentication auth) {
         UserEntity customer = (UserEntity) auth.getPrincipal();
         vehicleService.delete(vehicleId, customer);

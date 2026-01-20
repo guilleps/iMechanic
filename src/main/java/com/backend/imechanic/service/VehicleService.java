@@ -88,6 +88,25 @@ public class VehicleService {
                 ).toList();
     }
 
+    @Transactional(readOnly = true)
+    public VehicleResponse getVehicleByPlate(String plate, UserEntity customer) {
+
+        UserEntity user = userRepository.findById(customer.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Workshop not found for admin"));
+
+        Vehicle vehicle = vehicleRepository
+                .findVehicleByPlateAndCustomer_Id(plate, user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
+
+        return new VehicleResponse(
+                user.getId().toString(),
+                vehicle.getPlate(),
+                vehicle.getModel(),
+                vehicle.getBrand(),
+                vehicle.getYear()
+        );
+    }
+
     @Transactional
     public VehicleResponse update(Long vehicleId, VehicleRequest request, UserEntity customer) {
 
