@@ -1,6 +1,5 @@
 package com.backend.imechanic.controller.response;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public record OrderResponse(
@@ -18,13 +17,6 @@ public record OrderResponse(
     public record CustomerResponse(
             Long id,
             String email
-    ) {
-    }
-
-    public record ItemResponse(
-            Long id,
-            ServiceResponse service,
-            BigDecimal price
     ) {
     }
 

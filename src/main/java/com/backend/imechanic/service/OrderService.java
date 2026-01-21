@@ -1,8 +1,11 @@
 package com.backend.imechanic.service;
 
 import com.backend.imechanic.controller.request.OrderRequest;
+import com.backend.imechanic.controller.response.ItemResponse;
 import com.backend.imechanic.controller.response.OrderResponse;
 import com.backend.imechanic.controller.response.ServiceResponse;
+import com.backend.imechanic.enums.StatusItem;
+import com.backend.imechanic.enums.StatusOrder;
 import com.backend.imechanic.exception.EntityNotFoundException;
 import com.backend.imechanic.exception.IllegalArgumentException;
 import com.backend.imechanic.model.*;
@@ -52,6 +55,8 @@ public class OrderService {
         validateAssignments(employeeIds, serviceIds, request.items());
 
         Order order = Order.builder()
+                .description(request.description())
+                .status(StatusOrder.OPEN)
                 .vehicle(vehicle)
                 .workshop(workshop)
                 .build();
@@ -78,7 +83,7 @@ public class OrderService {
                         )
                 ),
                 items.stream().map(
-                        item -> new OrderResponse.ItemResponse(
+                        item -> new ItemResponse(
                                 item.getId(),
                                 new ServiceResponse(
                                         item.getService().getName(),
@@ -112,6 +117,7 @@ public class OrderService {
 
                             return Item.builder()
                                     .order(order)
+                                    .status(StatusItem.PENDING)
                                     .service(service)
                                     .employee(employee)
                                     .price(service.getBasePrice())
