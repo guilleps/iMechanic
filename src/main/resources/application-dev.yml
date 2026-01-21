@@ -11,19 +11,21 @@ spring:
     username:
     password:
 
-  # JAVAEMAIL CONFIGURATION
+  # JAVA EMAIL CONFIGURATION
   mail:
     password:
     username:
-
-
-logging:
-  level:
-    web: warn
-
 
 # SECURITY CONFIGURATION
 auth:
   secret:
     # https://randomkeygen.com/hmac-key
     key:
+
+  # MEDIA UPLOAD CONFIGURATION
+cloudinary:
+  url:
+
+logging:
+  level:
+    web: warn
