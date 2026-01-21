@@ -1,5 +1,6 @@
 package com.backend.imechanic.model;
 
+import com.backend.imechanic.enums.StatusItem;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,4 +38,8 @@ public class Item {
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusItem status;
 }

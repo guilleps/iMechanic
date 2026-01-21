@@ -1,5 +1,6 @@
 package com.backend.imechanic.model;
 
+import com.backend.imechanic.enums.StatusOrder;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,8 +23,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // añadir descripcion del problema
-//    private String description;
+    private String description;
 
     // TODO: considerar un mecanico lider?
 
@@ -40,6 +40,10 @@ public class Order {
 
     @Column(name = "total_cost", precision = 10, scale = 2)
     private BigDecimal totalCost;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusOrder status;
 
     @Column(name = "created_at")
     @CreationTimestamp
