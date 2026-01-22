@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/services/**").authenticated()
                         .requestMatchers("/api/v1/vehicles/**").authenticated()
                         .requestMatchers("/api/v1/orders/**").authenticated()
+                        .requestMatchers("/api/v1/items/**").authenticated()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
