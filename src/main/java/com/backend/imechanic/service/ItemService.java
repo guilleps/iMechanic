@@ -1,20 +1,24 @@
 package com.backend.imechanic.service;
 
+import com.backend.imechanic.config.media.CloudinaryService;
 import com.backend.imechanic.controller.response.ItemResponse;
 import com.backend.imechanic.controller.response.ServiceResponse;
+import com.backend.imechanic.controller.response.UploadEvidenceResponse;
 import com.backend.imechanic.enums.StatusItem;
 import com.backend.imechanic.enums.StatusOrder;
 import com.backend.imechanic.exception.EntityNotFoundException;
-import com.backend.imechanic.model.Employee;
-import com.backend.imechanic.model.Item;
-import com.backend.imechanic.model.Order;
-import com.backend.imechanic.model.UserEntity;
+import com.backend.imechanic.model.*;
 import com.backend.imechanic.repository.EmployeeRepository;
+import com.backend.imechanic.repository.EvidenceRepository;
 import com.backend.imechanic.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final EmployeeRepository employeeRepository;
+    private final CloudinaryService cloudinaryService;
+    private final EvidenceRepository evidenceRepository;
 
     @Transactional
     public ItemResponse updateStatus(Long orderId, Long itemId, UserEntity employeeAssigned) {
@@ -73,6 +79,38 @@ public class ItemService {
         } else {
             order.setStatus(StatusOrder.OPEN);
         }
+    }
+
+    @Transactional
+    public UploadEvidenceResponse uploadEvidence(Long itemId, String description, MultipartFile file) throws IOException {
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Evidence file is required");
+        }
+
+        Map<?, ?> result = cloudinaryService.uploadImage(file);
+        String url = String.valueOf(result.get("secure_url"));
+
+        Evidence evidence = Evidence.builder()
+                .description(description)
+                .mediaUrl(url)
+                .order(item.getOrder())
+                .item(item)
+                .build();
+
+        evidenceRepository.save(evidence);
+
+        item.setEvidence(evidence);
+
+        return new UploadEvidenceResponse(
+                evidence.getId(),
+                evidence.getMediaUrl(),
+                evidence.getCreatedAt().toString(),
+                evidence.getDescription()
+        );
     }
 
 }

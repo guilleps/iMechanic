@@ -3,6 +3,7 @@ package com.backend.imechanic.controller;
 import com.backend.imechanic.controller.request.OrderRequest;
 import com.backend.imechanic.controller.response.ItemResponse;
 import com.backend.imechanic.controller.response.OrderResponse;
+import com.backend.imechanic.controller.response.UploadEvidenceResponse;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.service.ItemService;
 import com.backend.imechanic.service.OrderService;
@@ -14,17 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    private final ItemService itemService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN') or hasAuthority('ROLE_EMPLOYEE')")
-    public ResponseEntity<@NonNull OrderResponse> create(
+    public ResponseEntity<@NonNull OrderResponse> createOrder(
             @Valid @RequestBody OrderRequest request,
             Authentication auth
     ) {
@@ -33,17 +36,16 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.create(request, creator));
     }
 
-    @PatchMapping("/{orderId}/item/{itemId}")
-    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
-    public ResponseEntity<@NonNull ItemResponse> create(
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<@NonNull UploadEvidenceResponse> uploadEvidence(
             @PathVariable Long orderId,
-            @PathVariable Long itemId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "description", required = false) String description,
             Authentication auth
-    ) {
-        UserEntity employee = (UserEntity) auth.getPrincipal();
+    ) throws IOException {
+        UserEntity creator = (UserEntity) auth.getPrincipal();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(itemService.updateStatus(orderId, itemId, employee));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderService.uploadEvidence(orderId, description, file, creator));
     }
 }

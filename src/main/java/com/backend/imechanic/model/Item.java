@@ -36,6 +36,9 @@ public class Item {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Evidence evidence;
+
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 

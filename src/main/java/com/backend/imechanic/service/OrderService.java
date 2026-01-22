@@ -1,9 +1,11 @@
 package com.backend.imechanic.service;
 
+import com.backend.imechanic.config.media.CloudinaryService;
 import com.backend.imechanic.controller.request.OrderRequest;
 import com.backend.imechanic.controller.response.ItemResponse;
 import com.backend.imechanic.controller.response.OrderResponse;
 import com.backend.imechanic.controller.response.ServiceResponse;
+import com.backend.imechanic.controller.response.UploadEvidenceResponse;
 import com.backend.imechanic.enums.StatusItem;
 import com.backend.imechanic.enums.StatusOrder;
 import com.backend.imechanic.exception.EntityNotFoundException;
@@ -15,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,8 @@ public class OrderService {
     private final WorkshopRepository workshopRepository;
     private final EmployeeRepository employeeRepository;
     private final EmployeeCatalogAssignmentRepository assignmentRepository;
+    private final CloudinaryService cloudinaryService;
+    private final EvidenceRepository evidenceRepository;
 
     @Transactional
     public OrderResponse create(OrderRequest request, UserEntity creator) {
@@ -96,6 +102,35 @@ public class OrderService {
                         )
                 ).toList(),
                 totalCost.toString());
+    }
+
+    @Transactional
+    public UploadEvidenceResponse uploadEvidence(Long orderId, String description, MultipartFile file, UserEntity user) throws IOException {
+        Workshop workshop = workshopRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+
+        Order order = orderRepository.findOrderByIdAndWorkshop_Id(orderId, workshop.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        Map<?, ?> result = cloudinaryService.uploadImage(file);
+        String url = String.valueOf(result.get("secure_url"));
+
+        Evidence evidence = Evidence.builder()
+                .description(description)
+                .mediaUrl(url)
+                .order(order)
+                .build();
+
+        order.getEvidences().add(evidence);
+
+        evidenceRepository.save(evidence);
+
+        return new UploadEvidenceResponse(
+                evidence.getId(),
+                evidence.getMediaUrl(),
+                evidence.getCreatedAt().toString(),
+                evidence.getDescription()
+        );
     }
 
     private List<Item> buildItems(
