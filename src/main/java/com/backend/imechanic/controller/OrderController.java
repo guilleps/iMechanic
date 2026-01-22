@@ -3,6 +3,7 @@ package com.backend.imechanic.controller;
 import com.backend.imechanic.controller.request.OrderRequest;
 import com.backend.imechanic.controller.response.ItemResponse;
 import com.backend.imechanic.controller.response.OrderResponse;
+import com.backend.imechanic.controller.response.TimelineResponse;
 import com.backend.imechanic.controller.response.UploadEvidenceResponse;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.service.ItemService;
@@ -37,6 +38,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}")
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
     public ResponseEntity<@NonNull UploadEvidenceResponse> uploadEvidence(
             @PathVariable Long orderId,
             @RequestParam("file") MultipartFile file,
@@ -47,5 +49,17 @@ public class OrderController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(orderService.uploadEvidence(orderId, description, file, creator));
+    }
+
+    @GetMapping("/{orderId}")
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN') or hasAuthority('ROLE_EMPLOYEE') or hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<@NonNull TimelineResponse> getTimeline(
+            @Valid @PathVariable Long orderId,
+            Authentication auth
+    ) {
+        UserEntity admin = (UserEntity) auth.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderService.getTimeline(orderId, admin));
     }
 }
