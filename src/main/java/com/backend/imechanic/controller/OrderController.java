@@ -1,12 +1,11 @@
 package com.backend.imechanic.controller;
 
 import com.backend.imechanic.controller.request.OrderRequest;
-import com.backend.imechanic.controller.response.ItemResponse;
+import com.backend.imechanic.controller.response.CloseOrderResponse;
 import com.backend.imechanic.controller.response.OrderResponse;
 import com.backend.imechanic.controller.response.TimelineResponse;
 import com.backend.imechanic.controller.response.UploadEvidenceResponse;
 import com.backend.imechanic.model.UserEntity;
-import com.backend.imechanic.service.ItemService;
 import com.backend.imechanic.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
@@ -51,7 +50,7 @@ public class OrderController {
                 .body(orderService.uploadEvidence(orderId, description, file, creator));
     }
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/{orderId}/timeline")
     @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN') or hasAuthority('ROLE_EMPLOYEE') or hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<@NonNull TimelineResponse> getTimeline(
             @Valid @PathVariable Long orderId,
@@ -61,5 +60,13 @@ public class OrderController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(orderService.getTimeline(orderId, admin));
+    }
+
+    @GetMapping("/{orderId}/close")
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
+    public ResponseEntity<@NonNull CloseOrderResponse> closeOrder(@PathVariable Long orderId, Authentication auth) {
+        UserEntity creator = (UserEntity) auth.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.closeOrder(orderId, creator));
     }
 }
