@@ -2,10 +2,7 @@ package com.backend.imechanic.service;
 
 import com.backend.imechanic.config.media.CloudinaryService;
 import com.backend.imechanic.controller.request.OrderRequest;
-import com.backend.imechanic.controller.response.ItemResponse;
-import com.backend.imechanic.controller.response.OrderResponse;
-import com.backend.imechanic.controller.response.ServiceResponse;
-import com.backend.imechanic.controller.response.UploadEvidenceResponse;
+import com.backend.imechanic.controller.response.*;
 import com.backend.imechanic.enums.StatusItem;
 import com.backend.imechanic.enums.StatusOrder;
 import com.backend.imechanic.exception.EntityNotFoundException;
@@ -130,6 +127,56 @@ public class OrderService {
                 evidence.getMediaUrl(),
                 evidence.getCreatedAt().toString(),
                 evidence.getDescription()
+        );
+    }
+
+    public TimelineResponse getTimeline(Long orderId, UserEntity user) {
+
+        Workshop workshop = workshopRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+
+        Order order = orderRepository.findOrderByIdAndWorkshop_Id(orderId, workshop.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        Vehicle vehicle = order.getVehicle();
+
+        String vehicleResponse = vehicle.getBrand() + " " + vehicle.getModel() + " - " + vehicle.getPlate();
+
+        int totalItems = order.getItems().size();
+        long countItemCompleted = order.getItems().stream()
+                .filter(item -> item.getStatus() == StatusItem.COMPLETED)
+                .count();
+
+        int progressPercentage = totalItems == 0
+                ? 0
+                : (int) Math.round((countItemCompleted * 100.0) / totalItems);
+
+        List<TimelineResponse.ItemTimelineResponse> timeline = order.getItems().stream()
+                .map(item -> {
+                    Profile profileEmployee = item.getEmployee().getUser().getProfile();
+
+                    return new TimelineResponse.ItemTimelineResponse(
+                            item.getId(),
+                            item.getService().getName(),
+                            profileEmployee.getFirstName() + " " + profileEmployee.getFirstName(),
+                            item.getStatus().toString(),
+                            item.getCreatedAt().toString(),
+                            item.getEvidence() == null
+                                    ? null
+                                    : new TimelineResponse.EvidenceResponse(
+                                    item.getEvidence().getMediaUrl(),
+                                    item.getEvidence().getDescription()
+                            )
+                    );
+                })
+                .toList();
+
+        return new TimelineResponse(
+                order.getId(),
+                vehicleResponse,
+                order.getStatus().toString(),
+                progressPercentage,
+                timeline
         );
     }
 

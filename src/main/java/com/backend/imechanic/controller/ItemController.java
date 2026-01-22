@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/items/{itemId}")
-@PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+@PreAuthorize("hasAuthority('ROLE_EMPLOYEE') or hasAuthority('ROLE_WORKSHOP_ADMIN')")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
