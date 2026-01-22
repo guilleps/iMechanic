@@ -3,6 +3,7 @@ package com.backend.imechanic.service;
 import com.backend.imechanic.config.media.CloudinaryService;
 import com.backend.imechanic.controller.request.OrderRequest;
 import com.backend.imechanic.controller.response.*;
+import com.backend.imechanic.enums.Role;
 import com.backend.imechanic.enums.StatusItem;
 import com.backend.imechanic.enums.StatusOrder;
 import com.backend.imechanic.exception.EntityNotFoundException;
@@ -130,13 +131,23 @@ public class OrderService {
         );
     }
 
+    @Transactional(readOnly = true)
     public TimelineResponse getTimeline(Long orderId, UserEntity user) {
 
-        Workshop workshop = workshopRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+        Order order;
 
-        Order order = orderRepository.findOrderByIdAndWorkshop_Id(orderId, workshop.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        if (user.getRole() == Role.ROLE_WORKSHOP_ADMIN) {
+            order = orderRepository.findOrderByIdAndWorkshop_User_Id(orderId, user.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        } else if (user.getRole() == Role.ROLE_EMPLOYEE) {
+            order = orderRepository.findOrderVisibleToEmployee(orderId, user.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        } else if (user.getRole() == Role.ROLE_CUSTOMER) {
+            order = orderRepository.findOrderByIdAndVehicle_Customer_Id(orderId, user.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        } else {
+            throw new IllegalArgumentException("Role not allowed");
+        }
 
         Vehicle vehicle = order.getVehicle();
 
@@ -158,7 +169,7 @@ public class OrderService {
                     return new TimelineResponse.ItemTimelineResponse(
                             item.getId(),
                             item.getService().getName(),
-                            profileEmployee.getFirstName() + " " + profileEmployee.getFirstName(),
+                            profileEmployee.getFirstName() + " " + profileEmployee.getLastName(),
                             item.getStatus().toString(),
                             item.getCreatedAt().toString(),
                             item.getEvidence() == null
@@ -177,6 +188,52 @@ public class OrderService {
                 order.getStatus().toString(),
                 progressPercentage,
                 timeline
+        );
+    }
+
+    @Transactional
+    public CloseOrderResponse closeOrder(Long orderId, UserEntity user) {
+
+        Workshop workshop = workshopRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Workshop not found"));
+
+        Order order = orderRepository.findOrderByIdAndWorkshop_Id(orderId, workshop.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        Profile profile = order.getVehicle().getCustomer().getProfile();
+        String customerName = profile.getFirstName() + " " + profile.getLastName();
+
+        BigDecimal totalCost = order.getItems().stream()
+                .map(Item::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<CloseOrderResponse.ServiceResponse> items = order.getItems().stream()
+                .map(item -> new CloseOrderResponse.ServiceResponse(
+                        item.getService().getName(),
+                        item.getService().getCategory().toString(),
+                        item.getService().getBasePrice()
+                ))
+                .toList();
+
+        boolean allCompleted = order.getItems().stream()
+                .allMatch(i -> i.getStatus() == StatusItem.COMPLETED);
+
+        if (!allCompleted) {
+            throw new IllegalArgumentException("Order cannot be closed until all items are completed");
+        }
+
+        order.setStatus(StatusOrder.READY);
+        orderRepository.save(order);
+
+        return new CloseOrderResponse(
+                order.getId(),
+                customerName,
+                order.getUpdatedAt().toString(),
+                new CloseOrderResponse.BreakdownResponse(
+                        BigDecimal.ZERO,
+                        totalCost
+                ),
+                items
         );
     }
 
