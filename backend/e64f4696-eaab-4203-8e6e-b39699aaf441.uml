@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>e64f4696-eaab-4203-8e6e-b39699aaf441</OriginalElement>
+  <nodes>
+    <node x="373.1643989709547" y="343.583139534285">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.orders</node>
+    <node x="1025.775399487824" y="355.583139534285">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.workshops</node>
+    <node x="59.260512958023924" y="542.0511903451496">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.evidences</node>
+    <node x="901.7807680973651" y="21.067013801464213">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.users</node>
+    <node x="944.8602849277822" y="925.079234227642">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employee_catalog_assignments</node>
+    <node x="1161.5561708846096" y="650.3943761192488">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employees</node>
+    <node x="647.7715182360784" y="33.06701380146421">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.vehicles</node>
+    <node x="1038.2807680973651" y="-241.44911193135658">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.profiles</node>
+    <node x="384.1643989709547" y="716.7553678757454">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.items</node>
+    <node x="808.8602849277821" y="602.3943761192488">e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.services</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employees" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.workshops" relationship="REFERENCES">
+      <point x="-82.0" y="-67.5" />
+      <point x="53.78077139678567" y="91.5" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.profiles" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.users" relationship="REFERENCES">
+      <point x="-0.38430607863477917" y="6.742319678816671" />
+      <point x="-0.38430607863477917" y="-4.829240648498569" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.items" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.services" relationship="REFERENCES">
+      <point x="172.0" y="-0.0" />
+      <point x="636.9502093669381" y="820.2553678757454" />
+      <point x="636.9502093669381" y="820.2553678757454" />
+      <point x="-136.0" y="102.36099175649656" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employee_catalog_assignments" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.services" relationship="REFERENCES">
+      <point x="-11.233837405640315" y="4.107193784716401" />
+      <point x="1085.126447522142" y="886.821993638945" />
+      <point x="929.860727271383" y="886.821993638945" />
+      <point x="-14.999557656399134" y="115.5" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.services" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.workshops" relationship="REFERENCES">
+      <point x="-14.999691175973226" y="-115.49998486014363" />
+      <point x="929.8605937518089" y="497.0" />
+      <point x="1115.2755036420394" y="497.0" />
+      <point x="1.0415421536436043E-4" y="91.49984589755678" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employee_catalog_assignments" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employees" relationship="REFERENCES">
+      <point x="2.727286171193555E-4" y="-55.50026718335789" />
+      <point x="1096.3605576563994" y="889.0" />
+      <point x="1251.056" y="889.0" />
+      <point x="-1.7088460958802898E-4" y="67.49962388075119" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.items" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employees" relationship="REFERENCES">
+      <point x="0.0" y="103.5" />
+      <point x="556.1643989709547" y="1072.171267183358" />
+      <point x="1266.056" y="1072.171267183358" />
+      <point x="14.999829115390412" y="67.5" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.evidences" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.items" relationship="REFERENCES">
+      <point x="0.0" y="91.5" />
+      <point x="152.26051295802392" y="820.2553678757454" />
+      <point x="-172.0" y="-0.0" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.vehicles" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.users" relationship="REFERENCES">
+      <point x="3.7768854714398685" y="1.0859213169704844" />
+      <point x="741.0484037075182" y="148.5670138014642" />
+      <point x="-227.0" y="0.0" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.orders" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.workshops" relationship="REFERENCES">
+      <point x="183.0" y="-15.000139534284983" />
+      <point x="-89.5" y="-15.000139534284983" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.workshops" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.users" relationship="REFERENCES">
+      <point x="-89.5" y="0.0" />
+      <point x="1125.547866805411" y="447.083139534285" />
+      <point x="-3.2329012919540787" y="127.5" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.employees" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.users" relationship="REFERENCES">
+      <point x="0.0" y="-67.5" />
+      <point x="122.2754027872445" y="127.5" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.orders" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.vehicles" relationship="REFERENCES">
+      <point x="0.0" y="-103.5" />
+      <point x="556.1643989709547" y="147.2330905306972" />
+      <point x="3.9681072827394246" y="-1.3339232707670021" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.evidences" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.orders" relationship="REFERENCES">
+      <point x="17.18750374475792" y="-16.61537348770935" />
+      <point x="152.26051295802392" y="616.9358168574403" />
+      <point x="152.26051295802392" y="447.083139534285" />
+      <point x="371.28280546448843" y="447.083139534285" />
+      <point x="371.28280546448843" y="445.9412695109262" />
+      <point x="-180.74723346484296" y="-1.1418700233588197" />
+    </edge>
+    <edge source="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.items" target="e64f4696-eaab-4203-8e6e-b39699aaf441.TABLE:imechanic_db.orders" relationship="REFERENCES">
+      <point x="0.0" y="-103.5" />
+      <point x="0.0" y="103.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.7273408239700374" showDependencies="false" x="-25.993820803295648" y="212.01905252317204" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+
