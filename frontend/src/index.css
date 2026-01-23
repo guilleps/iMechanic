@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* iMechanic Industrial Color Palette */
+    --background: 220 7% 89%; /* Alabaster Grey #e0e0e2 */
+    --foreground: 210 18% 17%; /* Dark Gray #232C33 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 18% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 18% 17%;
+
+    --primary: 214 38% 28%; /* Yale Blue #2b4162 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 200 29% 72%; /* Blue accent #A0C1D1 */
+    --secondary-foreground: 210 18% 17%;
+
+    --muted: 220 7% 92%;
+    --muted-foreground: 210 10% 40%;
+
+    --accent: 174 16% 42%; /* Muted Teal #5A7D7C */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 2 69% 28%; /* Dark Wine #721817 */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Status Colors */
+    --status-ready: 155 84% 24%; /* Dark Emerald #0b6e4f */
+    --status-progress: 32 95% 62%; /* Sandy Brown #fa9f42 */
+    --status-cancelled: 2 69% 28%; /* Dark Wine #721817 */
+    --status-info: 214 38% 28%; /* Yale Blue #2b4162 */
+
+    --border: 220 7% 85%;
+    --input: 220 7% 85%;
+    --ring: 214 38% 28%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 210 18% 17%; /* Dark Gray */
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 200 29% 72%;
+    --sidebar-primary-foreground: 210 18% 17%;
+    --sidebar-accent: 210 18% 22%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 210 18% 25%;
+    --sidebar-ring: 200 29% 72%;
+
+    --chart-1: 214 38% 28%;
+    --chart-2: 155 84% 24%;
+    --chart-3: 32 95% 62%;
+    --chart-4: 200 29% 72%;
+    --chart-5: 174 16% 42%;
+
+    --sidebar: 210 18% 17%;
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Space Mono', ui-monospace, monospace;
+
+    --shadow-sm: 0 1px 2px 0 hsl(210 18% 17% / 0.05);
+    --shadow: 0 1px 3px 0 hsl(210 18% 17% / 0.08), 0 1px 2px -1px hsl(210 18% 17% / 0.08);
+    --shadow-md: 0 4px 6px -1px hsl(210 18% 17% / 0.08), 0 2px 4px -2px hsl(210 18% 17% / 0.08);
+    --shadow-lg: 0 10px 15px -3px hsl(210 18% 17% / 0.08), 0 4px 6px -4px hsl(210 18% 17% / 0.08);
+    --shadow-xl: 0 20px 25px -5px hsl(210 18% 17% / 0.08), 0 8px 10px -6px hsl(210 18% 17% / 0.08);
+
+    --spacing: 0.25rem;
+  }
+
+  .dark {
+    --background: 210 18% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 210 18% 17%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 210 18% 17%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 200 29% 72%;
+    --primary-foreground: 210 18% 17%;
+
+    --secondary: 210 18% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 210 18% 22%;
+    --muted-foreground: 220 7% 65%;
+
+    --accent: 174 16% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 2 69% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --status-ready: 155 84% 30%;
+    --status-progress: 32 95% 62%;
+    --status-cancelled: 2 69% 40%;
+    --status-info: 200 29% 72%;
+
+    --border: 210 18% 25%;
+    --input: 210 18% 25%;
+    --ring: 200 29% 72%;
+
+    --sidebar-background: 210 18% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 200 29% 72%;
+    --sidebar-primary-foreground: 210 18% 10%;
+    --sidebar-accent: 210 18% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 210 18% 20%;
+    --sidebar-ring: 200 29% 72%;
+
+    --chart-1: 200 29% 72%;
+    --chart-2: 155 84% 30%;
+    --chart-3: 32 95% 62%;
+    --chart-4: 214 38% 45%;
+    --chart-5: 174 16% 50%;
+
+    --sidebar: 210 18% 10%;
+  }
+}
