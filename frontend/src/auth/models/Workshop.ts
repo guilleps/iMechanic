@@ -9,6 +9,6 @@ export type RegisterRequest = {
 
 export type Workshop = {
   message: string;
-  workshopId: number;
-  adminId: number;
+  email: string;
+  verificationRequired: boolean;
 };
