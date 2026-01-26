@@ -5,7 +5,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.backend.imechanic.controller.response.LoginResponse;
 import com.backend.imechanic.exception.IllegalArgumentException;
+import com.backend.imechanic.exception.IllegalStateException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,10 @@ public class JwtService {
         return verify(token).getSubject();
     }
 
+    public String extractJti(String token) {
+        return verify(token).getId();
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractSubject(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
@@ -54,20 +60,25 @@ public class JwtService {
     public LoginResponse generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(60 * 30);
-        String role = userDetails.getAuthorities().toString();
+        String role = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElseThrow(()-> new IllegalStateException("User has no role"));
+        String jti = UUID.randomUUID().toString();
 
         String token = JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(userDetails.getUsername())
                 .withClaim("role", role)
                 .withClaim("type", "access")
-                .withJWTId(UUID.randomUUID().toString())
+                .withJWTId(jti)
                 .withIssuedAt(Date.from(now))
                 .withNotBefore(Date.from(now))
                 .withExpiresAt(Date.from(expiresAt))
                 .sign(algorithm);
 
-        return new LoginResponse(token, role, Date.from(expiresAt).getTime());
+        return new LoginResponse(token, role, Date.from(expiresAt).getTime(), jti);
     }
 
     public String generateVerifyToken(String email) {

@@ -1,5 +1,9 @@
 package com.backend.imechanic.config.auth.JWT;
 
+import com.backend.imechanic.config.auth.cookie.CookieService;
+import com.backend.imechanic.exception.UserNotFoundException;
+import com.backend.imechanic.model.UserEntity;
+import com.backend.imechanic.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,23 +24,35 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final CookieService cookieService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        final String jwt = cookieService.extractCookie(request, "access_token");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (jwt == null || jwt.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
         final String username = jwtService.extractSubject(jwt);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            final String tokenJti = jwtService.extractJti(jwt);
+
+            UserEntity user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
+            String currentJti = user.getJwtId();
+            if (currentJti == null || !currentJti.equals(tokenJti)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
