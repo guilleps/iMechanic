@@ -252,4 +252,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status).body(body);
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<@NonNull BodyError> handleIllegalStateException(IllegalStateException ex, HttpServletRequest req) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        BodyError bodyError = new BodyError(
+                "INTERNAL_SERVER_ERROR",
+                ex.getMessage(),
+                status.value(),
+                req.getRequestURI(),
+                OffsetDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(bodyError);
+    }
 }

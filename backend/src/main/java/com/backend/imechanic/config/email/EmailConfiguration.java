@@ -3,7 +3,6 @@ package com.backend.imechanic.config.email;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -40,13 +39,5 @@ public class EmailConfiguration {
 
         javaMailSender.setJavaMailProperties(props);
         return javaMailSender;
-    }
-
-    @Bean
-    public SimpleMailMessage templateMessage() {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(email);
-        message.setSubject("Verifica tu cuenta - iMechanic");
-        return message;
     }
 }
