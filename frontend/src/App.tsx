@@ -1,40 +1,57 @@
-import { Route, Routes } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import './App.css';
-import Login from './auth/components/Login';
-import Register from './auth/components/Register';
-import VerifyEmail from './auth/components/VerifyEmail';
-import VerifyEmailNotice from './auth/components/VerifyEmailNotice';
-import ProtectedRoute from './shared/auth/ProtectedRoute';
-import RoleProtectedRoute from './shared/auth/RoleProtectedRoute';
-import DashboardW from './workshop/components/DashboardW';
-import DashboardE from './employee/components/DashboardE';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import OrdersKanban from "./pages/OrdersKanban";
+import OrderDetail from "./pages/OrderDetail";
+import MechanicView from "./pages/MechanicView";
+import MechanicProfile from "./pages/MechanicProfile";
+import Vehicles from "./pages/Vehicles";
+import Clients from "./pages/Clients";
+import Staff from "./pages/Staff";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
+import VerifyEmailNotice from "./pages/VerifyEmailNotice";
+import VerifyEmail from "./pages/VerifyEmail";
 
-function App() {
+const queryClient = new QueryClient();
 
-  return (
-    <>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
       <Toaster />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/check-email" element={<VerifyEmailNotice />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          {/* Auth Routes */}
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/check-email" element={<VerifyEmailNotice />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<div>Protected Home Page</div>} />
-        </Route>
+          {/* Admin Routes */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/orders" element={<OrdersKanban />} />
+          <Route path="/order/:id" element={<OrderDetail />} />
+          <Route path="/vehicles" element={<Vehicles />} />
+          <Route path="/customers" element={<Clients />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/configuration" element={<Dashboard />} />
 
-        <Route element={<RoleProtectedRoute allowedRoles={["ROLE_WORKSHOP_ADMIN"]} />}>
-          <Route path="/dashboard-workshop" element={<DashboardW />} />
-        </Route>
+          {/* Mechanic Routes */}
+          <Route path="/mechanic" element={<MechanicView />} />
+          <Route path="/mechanic/profile" element={<MechanicProfile />} />
 
-        <Route element={<RoleProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]} />}>
-          <Route path="/dashboard-employee" element={<DashboardE />} />
-        </Route>
-      </Routes>
-    </>
-  )
-}
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
-export default App
+export default App;
