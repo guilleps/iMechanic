@@ -6,7 +6,7 @@ export type AuthState = {
   isAuthenticated: boolean;
   role: Role | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<Role>;
   signout: () => Promise<void>;
 };
 

@@ -10,8 +10,8 @@ const adminNavItems = [
 ];
 
 const mechanicNavItems = [
-  { title: 'Tareas', url: '/mechanic', icon: Wrench },
-  { title: 'Perfil', url: '/mechanic/profile', icon: User },
+  { title: 'Tareas', url: '/employee', icon: Wrench },
+  { title: 'Perfil', url: '/employee/profile', icon: User },
 ];
 
 export function MobileNav() {

@@ -52,7 +52,7 @@ export default function MechanicView() {
               </div>
             </div>
             <Link 
-              to="/perfil" 
+              to="/employee/profile" 
               className="flex items-center gap-1 text-sm opacity-80 hover:opacity-100 transition-opacity"
             >
               Ver perfil

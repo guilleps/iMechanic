@@ -1,26 +1,27 @@
-import { NavLink, useLocation } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  ClipboardList,
-  Wrench,
-  Users,
-  Settings,
-  LogOut,
-  Car,
-} from 'lucide-react';
+import { logout } from '@/api/auth.api';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import {
+  Car,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+  Wrench,
+} from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -36,8 +37,14 @@ const bottomItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
+
+  const handleLogout = async () => {
+      await logout();
+      navigate('/login', { replace: true });
+  };
 
   return (
     <Sidebar className="border-r-0">
@@ -110,9 +117,14 @@ export function AppSidebar() {
           })}
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground w-full">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground w-full disabled:opacity-70 disabled:cursor-not-allowed"
+              >
                 <LogOut className="w-5 h-5" />
-                {!collapsed && <span className="font-medium">Cerrar Sesión</span>}
+                {!collapsed && (
+                  <span className="font-medium">Cerrar Sesión</span>
+                )}
               </button>
             </SidebarMenuButton>
           </SidebarMenuItem>

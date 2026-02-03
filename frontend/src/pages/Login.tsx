@@ -13,10 +13,12 @@ import { toastHttpError } from "@/lib/httpErrorToast";
 import { Eye, EyeOff, Lock, Mail, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/shared/auth/useAuth";
 import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -41,7 +43,7 @@ export default function Login() {
   const navigateTo = (role: string) => {
     const redirectByRole: Record<string, string> = {
       ROLE_WORKSHOP_ADMIN: "/dashboard",
-      ROLE_EMPLOYEE: "/dashboard",
+      ROLE_EMPLOYEE: "/employee",
       ROLE_CUSTOMER: "/",
     };
     return redirectByRole[role] ?? "/";
@@ -52,8 +54,8 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await loginWorkshop(formData);
-      toast.success(response.message);
+      const role = await login(formData.email, formData.password);
+      toast.success("Sesión iniciada");
 
       if (isChecked) {
         localStorage.setItem(
@@ -64,7 +66,7 @@ export default function Login() {
         localStorage.removeItem("data-login");
       }
 
-      navigate(navigateTo(response.role), { replace: true });
+      navigate(navigateTo(role), { replace: true });
     } catch (err: unknown) {
       toastHttpError(err, "Credenciales inválidas");
     } finally {

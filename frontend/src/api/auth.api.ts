@@ -39,7 +39,6 @@ export const loginWorkshop = async (
     "/auth/login",
     payload,
   );
-  console.log({data});
   return data;
 };
 

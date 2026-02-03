@@ -1,4 +1,4 @@
-import { loginWorkshop, logout, refreshSession } from "@/auth/api/auth.api";
+import { loginWorkshop, logout, refreshSession } from "@/api/auth.api";
 import { useEffect, useMemo, useState } from "react";
 import { AuthContext, type Role } from "./useAuth";
 
@@ -21,9 +21,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         })();
     }, []);
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string): Promise<Role> => {
         const data = await loginWorkshop({ email, password });
-        setRole(data.role as Role);
+        const userRole = data.role as Role;
+        setRole(userRole);
+        return userRole;
     };
 
     const signout = async () => {
