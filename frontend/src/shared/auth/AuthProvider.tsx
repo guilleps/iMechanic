@@ -1,4 +1,4 @@
-import { loginWorkshop, logout, refreshSession } from "@/api/auth.api";
+import { loginWorkshop, logout, refreshSession } from "@/auth/api/auth.api";
 import { useEffect, useMemo, useState } from "react";
 import { AuthContext, type Role } from "./useAuth";
 

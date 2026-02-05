@@ -1,20 +1,11 @@
-export type OrderStatus = 'recepcion' | 'diagnostico' | 'reparacion' | 'pruebas' | 'listo';
+import { Vehicle } from "@/workshop/models/vehicle";
 
-export interface Vehicle {
-  id: string;
-  plate: string;
-  brand: string;
-  model: string;
-  year: number;
-  color: string;
-  vin?: string;
-}
+export type OrderStatus = "OPEN" | "IN_PROGRESS" | "READY" | "DELIVERED";
 
-export interface Client {
+export interface Customer {
   id: string;
-  name: string;
-  phone: string;
-  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface Mechanic {
@@ -24,22 +15,16 @@ export interface Mechanic {
   specialty: string;
 }
 
+export type ItemStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED"
+
 export interface ServiceItem {
-  id: string;
   name: string;
-  description: string;
-  mechanicId: string;
-  mechanic?: Mechanic;
-  price: number;
-  laborCost: number;
-  partsCost: number;
-  status: 'pending' | 'in_progress' | 'completed';
-  estimatedTime?: string;
+  status: ItemStatus;
 }
 
 export interface TimelineEvent {
   id: string;
-  type: 'status_change' | 'note' | 'photo' | 'service_update';
+  type: "status_change" | "note" | "photo" | "service_update";
   title: string;
   description: string;
   timestamp: Date;
@@ -49,17 +34,18 @@ export interface TimelineEvent {
 
 export interface Order {
   id: string;
-  orderNumber: string;
+  // orderNumber: string;
   vehicle: Vehicle;
-  client: Client;
+  customer: Customer;
   status: OrderStatus;
   services: ServiceItem[];
-  timeline: TimelineEvent[];
-  createdAt: Date;
-  updatedAt: Date;
-  estimatedCompletion?: Date;
-  subtotal: number;
-  tax: number;
-  total: number;
-  notes?: string;
+  // timeline: TimelineEvent[];
+  // createdAt: Date;
+  // updatedAt: Date;
+  // estimatedCompletion?: Date;
+  // subtotal: number;
+  // tax: number;
+  // total: number;
+  // notes?: string;
+  totalCost: number;
 }
