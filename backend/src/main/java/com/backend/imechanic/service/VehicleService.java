@@ -2,10 +2,13 @@ package com.backend.imechanic.service;
 
 import com.backend.imechanic.controller.request.VehicleRequest;
 import com.backend.imechanic.controller.response.VehicleResponse;
+import com.backend.imechanic.enums.Role;
 import com.backend.imechanic.exception.EntityNotFoundException;
 import com.backend.imechanic.exception.IllegalArgumentException;
+import com.backend.imechanic.model.Profile;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.model.Vehicle;
+import com.backend.imechanic.repository.ProfileRepository;
 import com.backend.imechanic.repository.UserRepository;
 import com.backend.imechanic.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,71 +24,67 @@ import java.util.List;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     @Transactional
-    public VehicleResponse create(VehicleRequest request, UserEntity customer) {
+    public VehicleResponse create(VehicleRequest request, UserEntity admin) {
 
-        UserEntity user = userRepository.findById(customer.getId())
+        UserEntity user = userRepository.findById(admin.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Workshop not found for admin"));
+
+        UserEntity customer = UserEntity.builder()
+                .role(Role.ROLE_CUSTOMER)
+                .build();
+
+        Profile profile = Profile.builder()
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .phone(request.phone())
+                .build();
+
+        customer.setProfile(profile);
+        userRepository.save(customer);
 
         Vehicle vehicle = Vehicle.builder()
                 .plate(request.plate())
                 .model(request.model())
                 .brand(request.brand())
                 .year(request.year())
+                .workshop(user.getWorkshop())
                 .active(true)
-                .customer(user)
+                .customer(profile)
                 .build();
 
         vehicleRepository.save(vehicle);
 
         return new VehicleResponse(
-                user.getId().toString(),
                 vehicle.getPlate(),
                 vehicle.getModel(),
                 vehicle.getBrand(),
-                vehicle.getYear()
+                vehicle.getYear(),
+                profile.getFirstName(),
+                profile.getLastName(),
+                profile.getPhone()
         );
     }
 
     @Transactional(readOnly = true)
-    public VehicleResponse getVehicle(Long vehicleId, UserEntity customer) {
-
-        UserEntity user = userRepository.findById(customer.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Workshop not found for admin"));
-
-        Vehicle vehicle = vehicleRepository
-                .findVehicleByIdAndCustomer_Id(vehicleId, user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
-
-        return new VehicleResponse(
-                user.getId().toString(),
-                vehicle.getPlate(),
-                vehicle.getModel(),
-                vehicle.getBrand(),
-                vehicle.getYear()
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public List<VehicleResponse> getAllVehiclesByCustomer(UserEntity customer) {
-
-        UserEntity user = userRepository.findById(customer.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Workshop not found for admin"));
+    public List<VehicleResponse> getAllVehicles(UserEntity admin) {
 
         return vehicleRepository
-                .findAllByCustomer_Id(user.getId())
+                .findAllByWorkshop_User_Id(admin.getId())
                 .stream()
                 .filter(Vehicle::isActive)
-                .map(vehicle ->
-                        new VehicleResponse(
-                                user.getId().toString(),
-                                vehicle.getPlate(),
-                                vehicle.getModel(),
-                                vehicle.getBrand(),
-                                vehicle.getYear()
-                        )
-                ).toList();
+                .map(vehicle -> new VehicleResponse(
+                        vehicle.getPlate(),
+                        vehicle.getModel(),
+                        vehicle.getBrand(),
+                        vehicle.getYear(),
+                        vehicle.getCustomer().getFirstName(),
+                        vehicle.getCustomer().getLastName(),
+                        vehicle.getCustomer().getPhone()
+                ))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -95,12 +94,16 @@ public class VehicleService {
                 .findVehicleByPlate(plate)
                 .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
 
+        Profile profile = vehicle.getCustomer();
+
         return new VehicleResponse(
-                vehicle.getCustomer().getId().toString(),
                 vehicle.getPlate(),
                 vehicle.getModel(),
                 vehicle.getBrand(),
-                vehicle.getYear()
+                vehicle.getYear(),
+                profile.getFirstName(),
+                profile.getLastName(),
+                profile.getPhone()
         );
     }
 
@@ -118,12 +121,16 @@ public class VehicleService {
         vehicle.setBrand(request.brand());
         vehicle.setYear(request.year());
 
+        Profile profile = vehicle.getCustomer();
+
         return new VehicleResponse(
-                customer.getId().toString(),
                 vehicle.getPlate(),
                 vehicle.getModel(),
                 vehicle.getBrand(),
-                vehicle.getYear()
+                vehicle.getYear(),
+                profile.getFirstName(),
+                profile.getLastName(),
+                profile.getPhone()
         );
     }
 

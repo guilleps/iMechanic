@@ -1,10 +1,7 @@
 package com.backend.imechanic.controller;
 
 import com.backend.imechanic.controller.request.OrderRequest;
-import com.backend.imechanic.controller.response.CloseOrderResponse;
-import com.backend.imechanic.controller.response.OrderResponse;
-import com.backend.imechanic.controller.response.TimelineResponse;
-import com.backend.imechanic.controller.response.UploadEvidenceResponse;
+import com.backend.imechanic.controller.response.*;
 import com.backend.imechanic.model.UserEntity;
 import com.backend.imechanic.service.OrderService;
 import jakarta.validation.Valid;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -34,6 +32,14 @@ public class OrderController {
         UserEntity creator = (UserEntity) auth.getPrincipal();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.create(request, creator));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
+    public ResponseEntity<@NonNull List<OrderKanbanResponse>> getOrders(Authentication auth) {
+        UserEntity creator = (UserEntity) auth.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrders(creator));
     }
 
     @PatchMapping("/{orderId}")

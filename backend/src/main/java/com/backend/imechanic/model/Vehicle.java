@@ -36,9 +36,13 @@ public class Vehicle {
     @Column(nullable = false)
     private boolean active;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
-    private UserEntity customer;
+    private Profile customer;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "workshop_id", nullable = false)
+    private Workshop workshop;
 
     @OneToMany(mappedBy = "vehicle")
     private List<Order> orders;

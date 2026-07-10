@@ -22,11 +22,8 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<@NonNull VehicleResponse> create(
-            @Valid @RequestBody VehicleRequest request,
-            Authentication auth
-    ) {
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
+    public ResponseEntity<@NonNull VehicleResponse> create(@Valid @RequestBody VehicleRequest request, Authentication auth) {
         UserEntity customer = (UserEntity) auth.getPrincipal();
 
         return ResponseEntity
@@ -34,22 +31,11 @@ public class VehicleController {
                 .body(vehicleService.create(request, customer));
     }
 
-    @GetMapping("/{vehicleId}")
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<@NonNull VehicleResponse> getOne(
-            @PathVariable Long vehicleId,
-            Authentication auth
-    ) {
-        UserEntity customer = (UserEntity) auth.getPrincipal();
-
-        return ResponseEntity.ok(vehicleService.getVehicle(vehicleId, customer));
-    }
-
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")
     public ResponseEntity<@NonNull List<VehicleResponse>> getAll(Authentication auth) {
-        UserEntity customer = (UserEntity) auth.getPrincipal();
-        return ResponseEntity.ok(vehicleService.getAllVehiclesByCustomer(customer));
+        UserEntity admin = (UserEntity) auth.getPrincipal();
+        return ResponseEntity.ok(vehicleService.getAllVehicles(admin));
     }
 
     @PreAuthorize("hasAuthority('ROLE_WORKSHOP_ADMIN')")

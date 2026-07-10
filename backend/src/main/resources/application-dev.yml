@@ -5,34 +5,35 @@ spring:
   # MYSQL DRIVE CONFIGURATION
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   datasource:
     url: jdbc:mysql://localhost:3306/imechanic_db
-    username:
-    password:
+    username: 
+    password: 
 
   # JAVA EMAIL CONFIGURATION
   mail:
-    password:
-    username:
+    password: 
+    username: foodhub.recetas.xxx@gmail.com
 
 # SECURITY CONFIGURATION
 auth:
   secret:
     # https://randomkeygen.com/hmac-key
-    key:
+    key: 
 
-  allowed-origin:
+  allowed-origin: http://localhost:5173
 
-# COOKIES CONFIGURATION
+  # COOKIES CONFIGURATION
   cookie:
-    secure:
-    same-site:
+    secure: false
+    same-site: Lax
 
   # MEDIA UPLOAD CONFIGURATION
 cloudinary:
-  url:
+  url: cloudinary://<000000000000000>:<XYZXYZXYZYXZYXYZ>
 
 logging:
   level:
-    web: warn
+    root: info
+    com.backend.imechanic: debug

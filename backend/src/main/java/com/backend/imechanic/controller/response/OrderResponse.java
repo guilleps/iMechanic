@@ -16,7 +16,7 @@ public record OrderResponse(
 
     public record CustomerResponse(
             Long id,
-            String email
+            String fullName
     ) {
     }
 

@@ -12,6 +12,7 @@ import com.backend.imechanic.controller.response.VerifyResponse;
 import com.backend.imechanic.controller.response.WorkshopResponse;
 import com.backend.imechanic.enums.Role;
 import com.backend.imechanic.exception.EmailAlreadyRegisteredException;
+import com.backend.imechanic.exception.IllegalArgumentException;
 import com.backend.imechanic.exception.InvalidVerificationTokenException;
 import com.backend.imechanic.exception.UserNotFoundException;
 import com.backend.imechanic.model.Profile;

@@ -14,6 +14,16 @@ public record VehicleRequest(
         String brand,
 
         @NotBlank(message = "The field 'year' is required")
-        String year
+        String year,
+
+        @NotBlank(message = "The field 'firstName' is required")
+        String firstName,
+
+        @NotBlank(message = "The field 'lastName' is required")
+        String lastName,
+
+        @NotBlank(message = "The field 'phone' is required")
+        String phone
+
 ) {
 }

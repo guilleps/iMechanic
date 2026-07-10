@@ -4,9 +4,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,6 +41,7 @@ public class GlobalExceptionHandler {
                 fields
         );
 
+        logError("VALIDATION_ERROR", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -52,6 +58,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("EMAIL_ALREADY_REGISTERED", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -68,6 +75,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("VERIFY_TOKEN_INVALID", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -84,6 +92,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("BAD_REQUEST", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -100,6 +109,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("NOT_FOUND", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -116,6 +126,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("BAD_REQUEST", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -132,6 +143,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("INVALID_CREDENTIALS", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -148,6 +160,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("ACCOUNT_DISABLED", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -164,6 +177,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("ACCOUNT_LOCKED", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -171,7 +185,7 @@ public class GlobalExceptionHandler {
             CredentialsExpiredException.class,
             AccountExpiredException.class
     })
-    public ResponseEntity<@NonNull BodyError> expired(HttpServletRequest request) {
+    public ResponseEntity<@NonNull BodyError> expired(CredentialsExpiredException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         BodyError bodyError = new BodyError(
@@ -183,6 +197,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("ACCOUNT_EXPIRED", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -199,6 +214,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("NOT_FOUND", ex, request);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -215,6 +231,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("FORBIDDEN", ex, req);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -231,6 +248,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("CONFLICT", ex, req);
         return ResponseEntity.status(status).body(bodyError);
     }
 
@@ -250,6 +268,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("UNKNOWN_FIELD", ex, request);
         return ResponseEntity.status(status).body(body);
     }
 
@@ -266,6 +285,11 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        logError("INTERNAL_SERVER_ERROR", ex, req);
         return ResponseEntity.status(status).body(bodyError);
+    }
+
+    private void logError(String code, Exception ex, HttpServletRequest request) {
+        log.error("[{}] Error in {}: {}", code, request.getRequestURI(), ex.getMessage(), ex);
     }
 }

@@ -83,7 +83,7 @@ public class OrderService {
                         vehicle.getPlate(),
                         new OrderResponse.CustomerResponse(
                                 vehicle.getCustomer().getId(),
-                                vehicle.getCustomer().getEmail()
+                                vehicle.getCustomer().getFullName()
                         )
                 ),
                 items.stream().map(
@@ -200,7 +200,7 @@ public class OrderService {
         Order order = orderRepository.findOrderByIdAndWorkshop_Id(orderId, workshop.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
-        Profile profile = order.getVehicle().getCustomer().getProfile();
+        Profile profile = order.getVehicle().getCustomer();
         String customerName = profile.getFirstName() + " " + profile.getLastName();
 
         BigDecimal totalCost = order.getItems().stream()
@@ -263,6 +263,46 @@ public class OrderService {
                                     .build();
                         }
                 ).toList();
+    }
+
+    public List<OrderKanbanResponse> getOrders(UserEntity admin) {
+        Workshop workshop = workshopRepository.findByUserId(admin.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Workshop not found"));
+
+        List<Order> orders = workshop.getOrders();
+
+        List<OrderKanbanResponse.OrderKanbanItemResponse> items = orders.stream()
+                .flatMap(o -> o.getItems().stream())
+                .map(i -> {
+                    Catalog service = i.getService();
+                    return new OrderKanbanResponse.OrderKanbanItemResponse(service.getName(), i.getStatus());
+                })
+                .toList();
+
+        return orders.stream()
+                .map(o -> {
+                    Vehicle v = o.getVehicle();
+                    Profile customer = v.getCustomer();
+
+                    return new OrderKanbanResponse(
+                            "ORD-" + o.getId(),
+                            new OrderKanbanResponse.VehicleResponse(
+                                    v.getId(),
+                                    v.getPlate(),
+                                    v.getBrand(),
+                                    v.getModel(),
+                                    v.getYear()
+                            ),
+                            new OrderKanbanResponse.CustomerResponse(
+                                    customer.getId(),
+                                    customer.getFirstName(),
+                                    customer.getLastName()
+                            ),
+                            o.getStatus(),
+                            items,
+                            o.getTotalCost()
+                    );
+                }).toList();
     }
 
     private void validateAssignments(

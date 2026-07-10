@@ -67,10 +67,6 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private Role role; // asignacion del nuevo campo role, RBAC
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Vehicle> vehicles;
-
     public void setProfile(Profile profile) {
         this.profile = profile;
         if (profile != null) profile.setUser(this);

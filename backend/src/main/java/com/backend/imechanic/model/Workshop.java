@@ -46,4 +46,7 @@ public class Workshop {
 
     @OneToMany(mappedBy = "workshop")
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "workshop")
+    private List<Vehicle> vehicles;
 }
